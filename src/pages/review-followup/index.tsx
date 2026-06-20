@@ -101,32 +101,39 @@ const ReviewFollowupPage: React.FC = () => {
 
   const getTabCount = (tab: ReviewTabType) => {
     if (!order?.reviewInfo) return 0;
-    const records = order.reviewInfo.records;
+    return filterRecordsByTab(order.reviewInfo.records, tab).length;
+  };
+
+  const filterRecordsByTab = (records: ReviewRecord[], tab: ReviewTabType) => {
     switch (tab) {
-      case 'pending':
-        return records.filter(r => r.type === 'system_notice').length;
-      case 'processing':
-        return records.filter(r => r.type === 'dispatch_action' || r.type === 'driver_confirm').length;
-      case 'completed':
-        return 0;
       case 'all':
+        return records;
+      case 'pending':
+        return records.filter(r => {
+          if (r.type === 'system_notice' && r.content.includes('提交')) return true;
+          if (r.type === 'system_notice' && r.content.includes('受理')) return true;
+          return false;
+        });
+      case 'processing':
+        return records.filter(r => {
+          if (r.type === 'dispatch_action') return true;
+          if (r.type === 'driver_confirm') return true;
+          if (r.type === 'owner_remark') return true;
+          return false;
+        });
+      case 'completed':
+        return records.filter(r => {
+          if (r.type === 'system_notice' && r.content.includes('完成')) return true;
+          if (r.type === 'system_notice' && r.content.includes('最终')) return true;
+          return false;
+        });
       default:
-        return records.length;
+        return records;
     }
   };
 
   const filterRecords = (records: ReviewRecord[]) => {
-    switch (activeTab) {
-      case 'pending':
-        return records.filter(r => r.type === 'system_notice');
-      case 'processing':
-        return records.filter(r => r.type === 'dispatch_action' || r.type === 'driver_confirm');
-      case 'completed':
-        return records.filter(r => false);
-      case 'all':
-      default:
-        return records;
-    }
+    return filterRecordsByTab(records, activeTab);
   };
 
   const handleMockComplete = () => {
@@ -176,12 +183,18 @@ const ReviewFollowupPage: React.FC = () => {
   return (
     <ScrollView scrollY className={styles.page}>
       <View className={styles.content}>
-        <View className={styles.statusHeader}>
+        <View className={classnames(
+          styles.statusHeader,
+          styles[`status-${reviewInfo.status}`]
+        )}>
           <View className={styles.statusTitle}>复核状态</View>
           <View className={styles.statusMain}>
             <View className={styles.statusLeft}>
               <View className={styles.statusIcon}>
-                <Text>🔍</Text>
+                <Text>
+                  {reviewInfo.status === 'completed' ? '✅' : 
+                   reviewInfo.status === 'rejected' ? '❌' : '🔍'}
+                </Text>
               </View>
               <View className={styles.statusText}>
                 <View className={styles.statusValue}>{reviewInfo.statusText}</View>
@@ -290,15 +303,22 @@ const ReviewFollowupPage: React.FC = () => {
               className={classnames(styles.recordTab, activeTab === 'pending' && styles.active)}
               onClick={() => setActiveTab('pending')}
             >
-              <Text>系统通知</Text>
+              <Text>待处理</Text>
               <Text className={styles.tabCount}>{getTabCount('pending')}</Text>
             </View>
             <View
               className={classnames(styles.recordTab, activeTab === 'processing' && styles.active)}
               onClick={() => setActiveTab('processing')}
             >
-              <Text>处理进度</Text>
+              <Text>处理中</Text>
               <Text className={styles.tabCount}>{getTabCount('processing')}</Text>
+            </View>
+            <View
+              className={classnames(styles.recordTab, activeTab === 'completed' && styles.active)}
+              onClick={() => setActiveTab('completed')}
+            >
+              <Text>已完成</Text>
+              <Text className={styles.tabCount}>{getTabCount('completed')}</Text>
             </View>
           </View>
 

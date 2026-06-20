@@ -945,3 +945,53 @@
   color: $color-error;
   border-radius: $radius-xs;
 }
+
+.traceAbnormalList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.traceAbnormalCard {
+  background: $color-error-bg;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  border-left: 4rpx solid $color-error;
+}
+
+.traceAbnormalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6rpx;
+}
+
+.traceAbnormalName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-error;
+}
+
+.traceAbnormalTemp {
+  font-size: $font-size-xs;
+  color: $color-error;
+  background: rgba(245, 63, 63, 0.1);
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+}
+
+.traceAbnormalTime {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: 6rpx;
+}
+
+.traceAbnormalRemark {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 8rpx 12rpx;
+  border-radius: $radius-xs;
+  line-height: 1.5;
+}

@@ -420,17 +420,30 @@ const OrderDetailPage: React.FC = () => {
                     <View className={styles.traceDetail}>
                       {record.remark && (
                         <View className={styles.traceDetailItem}>
-                          <Text className={styles.label}>备注：</Text>
+                          <Text className={styles.label}>备注说明：</Text>
                           <Text>{record.remark}</Text>
                         </View>
                       )}
                       {relatedAbnormals.length > 0 && (
                         <View className={styles.traceDetailItem}>
-                          <Text className={styles.label}>关联异常：</Text>
-                          <View className={styles.traceAbnormalTags}>
+                          <Text className={styles.label}>关联异常时段：</Text>
+                          <View className={styles.traceAbnormalList}>
                             {relatedAbnormals.map(ab => (
-                              <View key={ab.id} className={styles.traceAbnormalTag}>
-                                <Text>{ab.description}</Text>
+                              <View key={ab.id} className={styles.traceAbnormalCard}>
+                                <View className={styles.traceAbnormalHeader}>
+                                  <Text className={styles.traceAbnormalName}>{ab.description}</Text>
+                                  <View className={styles.traceAbnormalTemp}>
+                                    <Text>{ab.minTemp}℃ ~ {ab.maxTemp}℃</Text>
+                                  </View>
+                                </View>
+                                <View className={styles.traceAbnormalTime}>
+                                  <Text>📅 {formatDate(ab.startTime)} → {formatDate(ab.endTime)}</Text>
+                                </View>
+                                {ab.remark && (
+                                  <View className={styles.traceAbnormalRemark}>
+                                    <Text>📝 {ab.remark}</Text>
+                                  </View>
+                                )}
                               </View>
                             ))}
                           </View>

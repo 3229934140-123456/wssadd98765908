@@ -505,7 +505,9 @@ export const updateOrderData = (id: string, updates: Partial<Order>): void => {
   const index = orders.findIndex(o => o.id === id);
   if (index !== -1) {
     orders[index] = { ...orders[index], ...updates };
-    saveToStorage(`order_${id}`, updates);
+    const existingData = loadFromStorage(`order_${id}`) || {};
+    const mergedData = { ...existingData, ...updates };
+    saveToStorage(`order_${id}`, mergedData);
   }
 };
 
