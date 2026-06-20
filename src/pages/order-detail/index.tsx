@@ -16,6 +16,7 @@ const OrderDetailPage: React.FC = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [recordTab, setRecordTab] = useState<RecordTabType>('switch');
   const [countdown, setCountdown] = useState<number>(0);
+  const [expandedTraceId, setExpandedTraceId] = useState<string | null>(null);
 
   useEffect(() => {
     const id = router.params.id;
@@ -349,6 +350,103 @@ const OrderDetailPage: React.FC = () => {
     );
   };
 
+  const getTraceDotClass = (type: string) => {
+    if (type === 'acceptance_submit') return styles.acceptance;
+    if (type === 'abnormal_remark') return styles.abnormal;
+    if (type === 'review_submit' || type === 'review_remark' || type === 'review_status_change') return styles.review;
+    if (type === 'review_completed' || type === 'system_notice') return styles.system;
+    return '';
+  };
+
+  const renderTraceTimeline = () => {
+    if (!order.traceRecords || order.traceRecords.length === 0) return null;
+    
+    const sortedRecords = [...order.traceRecords].sort(
+      (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
+
+    return (
+      <View className={styles.traceSection}>
+        <View className={styles.traceTitle}>
+          <View className={styles.titleIcon} style={{ display: 'none' }} />
+          <Text>📋 签收追溯</Text>
+          <Text style={{ fontSize: '24rpx', color: '#86909c', marginLeft: 'auto' }}>
+            共{sortedRecords.length}条记录
+          </Text>
+        </View>
+        <View className={styles.timeline}>
+          {sortedRecords.map(record => {
+            const isExpanded = expandedTraceId === record.id;
+            const relatedAbnormals = order.abnormalPeriods.filter(
+              ap => record.relatedAbnormalIds?.includes(ap.id)
+            );
+            
+            return (
+              <View
+                key={record.id}
+                className={styles.timelineItem}
+                onClick={() => setExpandedTraceId(isExpanded ? null : record.id)}
+              >
+                <View className={classnames(
+                  styles.timelineDot,
+                  getTraceDotClass(record.type)
+                )} />
+                <View className={styles.timelineLine} />
+                <View className={styles.timelineContent}>
+                  <View className={styles.timelineHeader}>
+                    <Text className={styles.timelineTitleText}>
+                      {record.title}
+                      {record.result && (
+                        <Text className={classnames(styles.timelineBadge, styles[record.result])}>
+                          {record.result === 'normal' ? '正常' : record.result === 'deduct' ? '扣损' : '拒收'}
+                        </Text>
+                      )}
+                      {record.reviewStatus && record.reviewStatusText && (
+                        <Text className={classnames(styles.timelineBadge, styles[record.reviewStatus])}>
+                          {record.reviewStatusText}
+                        </Text>
+                      )}
+                    </Text>
+                    <Text className={styles.timelineTime}>{formatDate(record.time)}</Text>
+                  </View>
+                  <View className={styles.timelineDesc}>
+                    <Text>{record.description}</Text>
+                  </View>
+                  <View className={styles.timelineOperator}>
+                    <Text>{record.operator} · {record.operatorRole}</Text>
+                  </View>
+                  
+                  {isExpanded && (
+                    <View className={styles.traceDetail}>
+                      {record.remark && (
+                        <View className={styles.traceDetailItem}>
+                          <Text className={styles.label}>备注：</Text>
+                          <Text>{record.remark}</Text>
+                        </View>
+                      )}
+                      {relatedAbnormals.length > 0 && (
+                        <View className={styles.traceDetailItem}>
+                          <Text className={styles.label}>关联异常：</Text>
+                          <View className={styles.traceAbnormalTags}>
+                            {relatedAbnormals.map(ab => (
+                              <View key={ab.id} className={styles.traceAbnormalTag}>
+                                <Text>{ab.description}</Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView scrollY className={styles.page}>
       <View className={styles.content}>
@@ -377,6 +475,8 @@ const OrderDetailPage: React.FC = () => {
         {renderReviewBtn()}
 
         {renderConclusion()}
+
+        {renderTraceTimeline()}
 
         <View className={styles.section}>
           <View className={styles.sectionTitle}>

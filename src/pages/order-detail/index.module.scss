@@ -757,3 +757,191 @@
     box-shadow: $shadow-card;
   }
 }
+
+.traceSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.traceTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 40rpx;
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: $spacing-lg;
+  cursor: pointer;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timelineDot {
+  position: absolute;
+  left: -40rpx;
+  top: 8rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: $color-border;
+  border: 4rpx solid $color-bg-card;
+  box-shadow: 0 0 0 2rpx $color-border;
+
+  &.acceptance {
+    background: $color-primary;
+    box-shadow: 0 0 0 2rpx $color-primary;
+  }
+
+  &.abnormal {
+    background: $color-error;
+    box-shadow: 0 0 0 2rpx $color-error;
+  }
+
+  &.review {
+    background: $color-warning;
+    box-shadow: 0 0 0 2rpx $color-warning;
+  }
+
+  &.system {
+    background: $color-info;
+    box-shadow: 0 0 0 2rpx $color-info;
+  }
+}
+
+.timelineLine {
+  position: absolute;
+  left: -29rpx;
+  top: 32rpx;
+  bottom: -8rpx;
+  width: 2rpx;
+  background: $color-divider;
+
+  .timelineItem:last-child & {
+    display: none;
+  }
+}
+
+.timelineContent {
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  transition: all $transition-fast;
+
+  &:active {
+    background: $color-primary-bg;
+  }
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.timelineTitleText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.timelineTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.timelineDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 8rpx;
+}
+
+.timelineOperator {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.timelineBadge {
+  font-size: $font-size-xs;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-sm;
+
+  &.normal {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &.deduct {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.reject {
+    background: $color-error-bg;
+    color: $color-error;
+  }
+
+  &.pending {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.processing {
+    background: $color-info-bg;
+    color: $color-info;
+  }
+
+  &.completed {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+}
+
+.traceDetail {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx dashed $color-divider;
+}
+
+.traceDetailItem {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: 4rpx;
+
+  .label {
+    color: $color-text-tertiary;
+    margin-right: $spacing-sm;
+  }
+}
+
+.traceAbnormalTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: 8rpx;
+}
+
+.traceAbnormalTag {
+  font-size: $font-size-xs;
+  padding: 2rpx 10rpx;
+  background: $color-error-bg;
+  color: $color-error;
+  border-radius: $radius-xs;
+}

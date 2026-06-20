@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Textarea } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
+import Taro, { useRouter, useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import TempChart from '@/components/TempChart';
@@ -21,26 +21,37 @@ const ReceiptPage: React.FC = () => {
   useEffect(() => {
     const id = router.params.id;
     if (id) {
-      const orderData = getOrderById(id as string);
-      if (orderData) {
-        setOrder(orderData);
-        if (orderData.abnormalPeriods) {
-          const initialRemarks: { [key: string]: string } = {};
-          orderData.abnormalPeriods.forEach(ap => {
-            if (ap.remark) {
-              initialRemarks[ap.id] = ap.remark;
-            }
-          });
-          setRemarkInput(initialRemarks);
-        }
-      } else {
-        Taro.showToast({
-          title: '订单不存在',
-          icon: 'none'
-        });
-      }
+      loadOrderData(id as string);
     }
   }, [router.params.id]);
+
+  useDidShow(() => {
+    const id = router.params.id;
+    if (id) {
+      loadOrderData(id as string);
+    }
+  });
+
+  const loadOrderData = (id: string) => {
+    const orderData = getOrderById(id);
+    if (orderData) {
+      setOrder(orderData);
+      if (orderData.abnormalPeriods) {
+        const initialRemarks: { [key: string]: string } = {};
+        orderData.abnormalPeriods.forEach(ap => {
+          if (ap.remark) {
+            initialRemarks[ap.id] = ap.remark;
+          }
+        });
+        setRemarkInput(initialRemarks);
+      }
+    } else {
+      Taro.showToast({
+        title: '订单不存在',
+        icon: 'none'
+      });
+    }
+  };
 
   const resultOptions = [
     { value: 'normal' as AcceptanceResult, name: '正常验收', desc: '货物完好，温度合格，正常签收', color: 'success' },

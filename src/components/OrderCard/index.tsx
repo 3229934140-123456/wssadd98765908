@@ -29,12 +29,32 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
       return '复核中';
     }
     if (order.status === 'completed') {
-      return '已送达';
+      return order.acceptanceConclusion?.resultText || '已签收';
     }
     if (order.status === 'loading') {
       return '待发车';
     }
     return getEtaText(order.estimatedArrival);
+  };
+
+  const getStatusBadgeText = () => {
+    if (order.status === 'completed' && order.acceptanceConclusion) {
+      return order.acceptanceConclusion.resultText;
+    }
+    if (order.status === 'reviewing') {
+      return '复核中';
+    }
+    return order.coolerModeText;
+  };
+
+  const getStatusBadgeType = () => {
+    if (order.status === 'completed' && order.acceptanceConclusion) {
+      return order.acceptanceConclusion.result || 'normal';
+    }
+    if (order.status === 'reviewing') {
+      return 'danger';
+    }
+    return statusType;
   };
 
   return (
@@ -48,15 +68,25 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
                 <Text>有备注</Text>
               </View>
             )}
-            {order.hasReview && (
+            {order.hasReview && order.status === 'reviewing' && (
               <View className={classnames(styles.smallTag, styles.review)}>
                 <Text>复核中</Text>
               </View>
             )}
+            {order.acceptanceConclusion?.result === 'deduct' && !order.hasReview && (
+              <View className={classnames(styles.smallTag, styles.deduct)}>
+                <Text>扣损</Text>
+              </View>
+            )}
+            {order.acceptanceConclusion?.result === 'normal' && !order.hasReview && (
+              <View className={classnames(styles.smallTag, styles.normal)}>
+                <Text>正常签收</Text>
+              </View>
+            )}
           </View>
         </View>
-        <View className={classnames(styles.statusBadge, styles[statusType])}>
-          {order.coolerModeText}
+        <View className={classnames(styles.statusBadge, styles[getStatusBadgeType()])}>
+          {getStatusBadgeText()}
         </View>
       </View>
 

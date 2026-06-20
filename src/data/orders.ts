@@ -1,4 +1,4 @@
-import { Order, TemperaturePoint, SwitchNode, ProgressStep, AbnormalPeriod, WarningInfo, AcceptanceConclusion, ReviewInfo, ReviewRecord, DisposalAction } from '@/types';
+import { Order, TemperaturePoint, SwitchNode, ProgressStep, AbnormalPeriod, WarningInfo, AcceptanceConclusion, ReviewInfo, ReviewRecord, DisposalAction, TraceRecord, TraceEventType, ReviewStatus } from '@/types';
 
 const STORAGE_KEY_PREFIX = 'cold_chain_';
 
@@ -432,7 +432,53 @@ const baseOrders: Order[] = [
       ]
     },
     hasRemark: true,
-    hasReview: true
+    hasReview: true,
+    traceRecords: [
+      {
+        id: 't1',
+        type: 'abnormal_remark',
+        title: '添加异常备注',
+        description: '对异常时段添加了备注',
+        time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 15 * 60 * 1000).toISOString(),
+        operator: '王经理',
+        operatorRole: '货主',
+        relatedAbnormalIds: ['ab3'],
+        remark: '冷机故障约3小时，最高温度-8.5℃'
+      },
+      {
+        id: 't2',
+        type: 'acceptance_submit',
+        title: '提交验收',
+        description: '提交拒收复核申请',
+        time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(),
+        operator: '王经理',
+        operatorRole: '货主',
+        relatedAbnormalIds: ['ab3', 'ab4'],
+        result: 'reject',
+        remark: '冷机故障约3小时，最高温度-8.5℃，远超-15℃上限，怀疑部分三文鱼已变质，申请复核'
+      },
+      {
+        id: 't3',
+        type: 'review_status_change',
+        title: '复核状态变更',
+        description: '复核申请已受理，分配处理人',
+        time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 35 * 60 * 1000).toISOString(),
+        operator: '系统',
+        operatorRole: '系统',
+        reviewStatus: 'processing',
+        reviewStatusText: '处理中'
+      },
+      {
+        id: 't4',
+        type: 'review_remark',
+        title: '追加沟通备注',
+        description: '货主追加沟通备注',
+        time: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+        operator: '王经理',
+        operatorRole: '货主',
+        remark: '请尽快安排质检，客户等着收货'
+      }
+    ]
   }
 ];
 
@@ -463,6 +509,19 @@ export const updateOrderData = (id: string, updates: Partial<Order>): void => {
   }
 };
 
+export const addTraceRecord = (orderId: string, record: Omit<TraceRecord, 'id'>): void => {
+  const order = getOrderById(orderId);
+  if (!order) return;
+  
+  const newRecord: TraceRecord = {
+    ...record,
+    id: `trace_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  };
+  
+  const traceRecords = order.traceRecords ? [...order.traceRecords, newRecord] : [newRecord];
+  updateOrderData(orderId, { traceRecords });
+};
+
 export const saveAbnormalRemark = (orderId: string, abnormalId: string, remark: string): void => {
   const order = getOrderById(orderId);
   if (order) {
@@ -471,6 +530,18 @@ export const saveAbnormalRemark = (orderId: string, abnormalId: string, remark: 
     );
     const hasRemark = abnormalPeriods.some(ap => ap.remark && ap.remark.length > 0);
     updateOrderData(orderId, { abnormalPeriods, hasRemark });
+    
+    const abnormal = order.abnormalPeriods.find(ap => ap.id === abnormalId);
+    addTraceRecord(orderId, {
+      type: 'abnormal_remark',
+      title: '添加异常备注',
+      description: remark ? '更新异常时段备注' : '添加异常时段备注',
+      time: new Date().toISOString(),
+      operator: '货主',
+      operatorRole: '货主',
+      relatedAbnormalIds: [abnormalId],
+      remark
+    });
   }
 };
 
@@ -516,6 +587,32 @@ export const saveAcceptanceConclusion = (orderId: string, conclusion: Acceptance
       status
     });
   }
+  
+  addTraceRecord(orderId, {
+    type: 'acceptance_submit',
+    title: '提交验收',
+    description: conclusion.resultText,
+    time: conclusion.submitTime,
+    operator: '货主',
+    operatorRole: '货主',
+    relatedAbnormalIds: conclusion.relatedAbnormalIds,
+    result: conclusion.result,
+    remark: conclusion.remark
+  });
+  
+  if (conclusion.result === 'reject') {
+    addTraceRecord(orderId, {
+      type: 'review_submit',
+      title: '发起复核',
+      description: `${conclusion.resultText}申请已提交`,
+      time: conclusion.submitTime,
+      operator: '系统',
+      operatorRole: '系统',
+      relatedAbnormalIds: conclusion.relatedAbnormalIds,
+      reviewStatus: 'pending',
+      reviewStatusText: '待处理'
+    });
+  }
 };
 
 export const addReviewRecord = (orderId: string, content: string): void => {
@@ -537,6 +634,77 @@ export const addReviewRecord = (orderId: string, content: string): void => {
   };
   
   updateOrderData(orderId, { reviewInfo });
+  
+  addTraceRecord(orderId, {
+    type: 'review_remark',
+    title: '追加沟通备注',
+    description: '货主追加沟通备注',
+    time: new Date().toISOString(),
+    operator: '货主',
+    operatorRole: '货主',
+    remark: content
+  });
+};
+
+export const updateReviewStatus = (orderId: string, status: ReviewStatus, statusText: string, handler?: { name: string; role: string; phone: string }): void => {
+  const order = getOrderById(orderId);
+  if (!order || !order.reviewInfo) return;
+  
+  const reviewInfo: ReviewInfo = {
+    ...order.reviewInfo,
+    status,
+    statusText,
+    ...(handler && { currentHandler: handler })
+  };
+  
+  let orderStatus: Order['status'] = order.status;
+  let hasReview = order.hasReview;
+  
+  if (status === 'completed') {
+    orderStatus = 'completed';
+    hasReview = false;
+  } else if (status === 'rejected') {
+    orderStatus = 'completed';
+    hasReview = false;
+  }
+  
+  updateOrderData(orderId, { reviewInfo, status: orderStatus, hasReview });
+  
+  const systemRecord: ReviewRecord = {
+    id: `rec${Date.now()}`,
+    type: 'system_notice',
+    actor: '系统',
+    role: '系统',
+    content: `复核状态变更为：${statusText}${handler ? `，处理人：${handler.name}` : ''}`,
+    time: new Date().toISOString()
+  };
+  
+  reviewInfo.records.push(systemRecord);
+  updateOrderData(orderId, { reviewInfo });
+  
+  addTraceRecord(orderId, {
+    type: 'review_status_change',
+    title: '复核状态变更',
+    description: `复核状态变更为${statusText}`,
+    time: new Date().toISOString(),
+    operator: '系统',
+    operatorRole: '系统',
+    reviewStatus: status,
+    reviewStatusText: statusText
+  });
+  
+  if (status === 'completed') {
+    addTraceRecord(orderId, {
+      type: 'review_completed',
+      title: '复核完成',
+      description: '复核流程已完成',
+      time: new Date().toISOString(),
+      operator: '系统',
+      operatorRole: '系统',
+      reviewStatus: status,
+      reviewStatusText: statusText
+    });
+  }
 };
 
 export const refreshOrderData = (orderId: string): Order | undefined => {

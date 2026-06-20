@@ -10,6 +10,16 @@ export type ReviewStatus = 'pending' | 'processing' | 'completed' | 'rejected';
 
 export type ActionType = 'driver_confirm' | 'dispatch_action' | 'system_notice' | 'owner_remark';
 
+export type TraceEventType = 
+  | 'acceptance_submit'
+  | 'abnormal_remark'
+  | 'review_submit'
+  | 'review_remark'
+  | 'review_status_change'
+  | 'review_completed';
+
+export type ReviewTabType = 'pending' | 'processing' | 'completed' | 'all';
+
 export interface TemperaturePoint {
   time: string;
   temperature: number;
@@ -92,6 +102,21 @@ export interface ReviewInfo {
   records: ReviewRecord[];
 }
 
+export interface TraceRecord {
+  id: string;
+  type: TraceEventType;
+  title: string;
+  description: string;
+  time: string;
+  operator: string;
+  operatorRole: string;
+  relatedAbnormalIds?: string[];
+  remark?: string;
+  result?: AcceptanceResult;
+  reviewStatus?: ReviewStatus;
+  reviewStatusText?: string;
+}
+
 export interface AbnormalPeriod {
   id: string;
   startTime: string;
@@ -135,6 +160,7 @@ export interface Order {
   warningInfo?: WarningInfo;
   acceptanceConclusion?: AcceptanceConclusion;
   reviewInfo?: ReviewInfo;
+  traceRecords?: TraceRecord[];
   hasRemark?: boolean;
   hasReview?: boolean;
 }

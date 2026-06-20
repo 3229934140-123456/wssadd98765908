@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Textarea } from '@tarojs/components';
 import Taro, { useRouter, useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
-import { getOrderById, addReviewRecord, refreshOrderData } from '@/data/orders';
-import { Order, ReviewRecord } from '@/types';
+import { getOrderById, addReviewRecord, refreshOrderData, updateReviewStatus } from '@/data/orders';
+import { Order, ReviewRecord, ReviewTabType } from '@/types';
 import { formatDate } from '@/utils';
 
 const ReviewFollowupPage: React.FC = () => {
@@ -12,6 +12,7 @@ const ReviewFollowupPage: React.FC = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [remark, setRemark] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<ReviewTabType>('all');
 
   useEffect(() => {
     const id = router.params.id;
@@ -96,6 +97,65 @@ const ReviewFollowupPage: React.FC = () => {
     if (status === 'pending' || status === 'processing') return styles.warning;
     if (status === 'rejected') return styles.danger;
     return '';
+  };
+
+  const getTabCount = (tab: ReviewTabType) => {
+    if (!order?.reviewInfo) return 0;
+    const records = order.reviewInfo.records;
+    switch (tab) {
+      case 'pending':
+        return records.filter(r => r.type === 'system_notice').length;
+      case 'processing':
+        return records.filter(r => r.type === 'dispatch_action' || r.type === 'driver_confirm').length;
+      case 'completed':
+        return 0;
+      case 'all':
+      default:
+        return records.length;
+    }
+  };
+
+  const filterRecords = (records: ReviewRecord[]) => {
+    switch (activeTab) {
+      case 'pending':
+        return records.filter(r => r.type === 'system_notice');
+      case 'processing':
+        return records.filter(r => r.type === 'dispatch_action' || r.type === 'driver_confirm');
+      case 'completed':
+        return records.filter(r => false);
+      case 'all':
+      default:
+        return records;
+    }
+  };
+
+  const handleMockComplete = () => {
+    if (!order) return;
+    
+    Taro.showModal({
+      title: '模拟复核完成',
+      content: '是否模拟复核完成？完成后订单状态将变为已完成，复核标记将清除。',
+      confirmText: '确认完成',
+      confirmColor: '#00b42a',
+      success: res => {
+        if (res.confirm && order) {
+          updateReviewStatus(order.id, 'completed', '已完成', {
+            name: '张主管',
+            role: '运营主管',
+            phone: '138****8888'
+          });
+          const freshOrder = refreshOrderData(order.id);
+          if (freshOrder) {
+            setOrder(freshOrder);
+          }
+          Taro.showToast({ title: '复核已完成', icon: 'success' });
+          
+          setTimeout(() => {
+            Taro.navigateBack();
+          }, 1500);
+        }
+      }
+    });
   };
 
   if (!order || !order.reviewInfo) {
@@ -216,13 +276,35 @@ const ReviewFollowupPage: React.FC = () => {
           <View className={styles.sectionTitle}>
             <View className={styles.titleIcon} />
             <Text>处理记录</Text>
-            <View className={classnames(styles.badge, getStatusBadgeClass(reviewInfo.status))}>
-              <Text>{reviewInfo.records.length}条</Text>
+          </View>
+          
+          <View className={styles.recordTabs}>
+            <View
+              className={classnames(styles.recordTab, activeTab === 'all' && styles.active)}
+              onClick={() => setActiveTab('all')}
+            >
+              <Text>全部</Text>
+              <Text className={styles.tabCount}>{reviewInfo.records.length}</Text>
+            </View>
+            <View
+              className={classnames(styles.recordTab, activeTab === 'pending' && styles.active)}
+              onClick={() => setActiveTab('pending')}
+            >
+              <Text>系统通知</Text>
+              <Text className={styles.tabCount}>{getTabCount('pending')}</Text>
+            </View>
+            <View
+              className={classnames(styles.recordTab, activeTab === 'processing' && styles.active)}
+              onClick={() => setActiveTab('processing')}
+            >
+              <Text>处理进度</Text>
+              <Text className={styles.tabCount}>{getTabCount('processing')}</Text>
             </View>
           </View>
-          {reviewInfo.records.length > 0 ? (
+
+          {filterRecords(reviewInfo.records).length > 0 ? (
             <View className={styles.timeline}>
-              {reviewInfo.records.slice().reverse().map((record: ReviewRecord) => (
+              {filterRecords(reviewInfo.records).slice().reverse().map((record: ReviewRecord) => (
                 <View key={record.id} className={styles.timelineItem}>
                   <View className={classnames(
                     styles.timelineDot,
@@ -247,10 +329,18 @@ const ReviewFollowupPage: React.FC = () => {
             </View>
           ) : (
             <View className={styles.emptyState}>
-              <Text>暂无处理记录</Text>
+              <Text>暂无记录</Text>
             </View>
           )}
         </View>
+
+        {reviewInfo.status === 'processing' && (
+          <View className={styles.mockSection}>
+            <View className={styles.mockBtn} onClick={handleMockComplete}>
+              <Text>🎯 模拟复核完成（演示）</Text>
+            </View>
+          </View>
+        )}
 
         <View className={styles.section}>
           <View className={styles.sectionTitle}>

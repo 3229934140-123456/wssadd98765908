@@ -51,6 +51,16 @@
     background: $color-warning-bg;
     color: $color-warning;
   }
+
+  &.normal {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &.deduct {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
 }
 
 .statusBadge {
@@ -77,6 +87,16 @@
   &.info {
     background: $color-info-bg;
     color: $color-info;
+  }
+
+  &.deduct {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.reject {
+    background: $color-error-bg;
+    color: $color-error;
   }
 }
 
