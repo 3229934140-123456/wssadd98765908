@@ -17,13 +17,40 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: $spacing-md;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
 }
 
 .orderNo {
   font-size: $font-size-sm;
   color: $color-text-tertiary;
+}
+
+.tagRow {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.smallTag {
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+
+  &.remark {
+    background: $color-primary-bg;
+    color: $color-primary;
+  }
+
+  &.review {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
 }
 
 .statusBadge {
@@ -62,6 +89,7 @@
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
   margin-bottom: $spacing-xs;
+  @include text-ellipsis;
 }
 
 .cargoType {
@@ -135,4 +163,26 @@
 .etaTime {
   color: $color-primary;
   font-weight: $font-weight-medium;
+}
+
+.conclusionBadge {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+
+  &.normal {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &.deduct {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.reject {
+    background: $color-error-bg;
+    color: $color-error;
+  }
 }

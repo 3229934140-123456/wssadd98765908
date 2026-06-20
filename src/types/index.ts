@@ -4,6 +4,8 @@ export type CoolerMode = 'cooling' | 'plug_in' | 'oil' | 'standby';
 
 export type TempStatus = 'normal' | 'warning' | 'danger';
 
+export type AcceptanceResult = 'normal' | 'deduct' | 'reject' | null;
+
 export interface TemperaturePoint {
   time: string;
   temperature: number;
@@ -22,6 +24,35 @@ export interface ProgressStep {
   time: string;
   completed: boolean;
   current: boolean;
+}
+
+export interface WarningInfo {
+  enabled: boolean;
+  direction: 'up' | 'down';
+  diff: number;
+  currentAction: string;
+  estimatedRecovery: string;
+}
+
+export interface AcceptanceConclusion {
+  result: AcceptanceResult;
+  resultText: string;
+  reason: string;
+  remark: string;
+  relatedAbnormalIds: string[];
+  submitTime: string;
+}
+
+export interface AbnormalPeriod {
+  id: string;
+  startTime: string;
+  endTime: string;
+  maxTemp: number;
+  minTemp: number;
+  type: 'over_temp' | 'door_open_long' | 'cooler_stop';
+  description: string;
+  remark?: string;
+  selected?: boolean;
 }
 
 export interface Order {
@@ -52,17 +83,10 @@ export interface Order {
   handlingProgress?: ProgressStep[];
   isAbnormal: boolean;
   abnormalDesc?: string;
-}
-
-export interface AbnormalPeriod {
-  id: string;
-  startTime: string;
-  endTime: string;
-  maxTemp: number;
-  minTemp: number;
-  type: 'over_temp' | 'door_open_long' | 'cooler_stop';
-  description: string;
-  remark?: string;
+  warningInfo?: WarningInfo;
+  acceptanceConclusion?: AcceptanceConclusion;
+  hasRemark?: boolean;
+  hasReview?: boolean;
 }
 
 export interface Message {

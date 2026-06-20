@@ -37,7 +37,21 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
   return (
     <View className={styles.card} onClick={handleClick}>
       <View className={styles.header}>
-        <Text className={styles.orderNo}>{order.orderNo}</Text>
+        <View className={styles.headerLeft}>
+          <Text className={styles.orderNo}>{order.orderNo}</Text>
+          <View className={styles.tagRow}>
+            {order.hasRemark && (
+              <View className={classnames(styles.smallTag, styles.remark)}>
+                <Text>有备注</Text>
+              </View>
+            )}
+            {order.hasReview && (
+              <View className={classnames(styles.smallTag, styles.review)}>
+                <Text>复核中</Text>
+              </View>
+            )}
+          </View>
+        </View>
         <View className={classnames(styles.statusBadge, styles[statusType])}>
           {order.coolerModeText}
         </View>
@@ -47,6 +61,17 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
         <Text className={styles.cargoName}>{order.cargoName}</Text>
         <Text className={styles.cargoType}>{order.cargoType} · {order.plateNumber}</Text>
       </View>
+
+      {order.acceptanceConclusion && (
+        <View
+          className={classnames(
+            styles.conclusionBadge,
+            styles[order.acceptanceConclusion.result || 'normal']
+          )}
+        >
+          <Text>{order.acceptanceConclusion.resultText}</Text>
+        </View>
+      )}
 
       <View className={styles.route}>
         <Text className={styles.origin}>{order.origin}</Text>

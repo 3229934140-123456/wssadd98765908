@@ -35,6 +35,157 @@
   border-radius: 4rpx;
 }
 
+.warningCard {
+  background: linear-gradient(135deg, rgba(255, 125, 0, 0.1) 0%, rgba(255, 125, 0, 0.05) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  border-left: 8rpx solid $color-warning;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40rpx;
+    right: -40rpx;
+    width: 120rpx;
+    height: 120rpx;
+    background: rgba(255, 125, 0, 0.1);
+    border-radius: 50%;
+  }
+}
+
+.warningHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  position: relative;
+  z-index: 1;
+}
+
+.warningIcon {
+  font-size: 40rpx;
+}
+
+.warningTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+}
+
+.warningBody {
+  position: relative;
+  z-index: 1;
+}
+
+.warningItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx dashed rgba(255, 125, 0, 0.2);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.warningLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.warningValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.highlight {
+  color: $color-warning;
+  font-weight: $font-weight-bold;
+}
+
+.conclusionSection {
+  background: linear-gradient(135deg, rgba(14, 138, 255, 0.1) 0%, rgba(14, 138, 255, 0.05) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  border-left: 8rpx solid $color-primary;
+}
+
+.conclusionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.conclusionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.conclusionBadge {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+
+  &.normal {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &.deduct {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.reject {
+    background: $color-error-bg;
+    color: $color-error;
+  }
+}
+
+.conclusionItem {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-xs 0;
+}
+
+.conclusionLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+  width: 120rpx;
+}
+
+.conclusionValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.relatedAbnormals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.relatedTag {
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  background: $color-error-bg;
+  color: $color-error;
+  border-radius: $radius-xs;
+}
+
 .routeInfo {
   display: flex;
   align-items: center;
@@ -267,4 +418,29 @@
   font-size: $font-size-sm;
   color: $color-error;
   font-weight: $font-weight-medium;
+}
+
+.tabContainer {
+  display: flex;
+  margin-bottom: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  padding: 4rpx;
+}
+
+.tabItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border-radius: $radius-sm;
+  transition: all $transition-fast;
+
+  &.active {
+    background: $color-bg-card;
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+    box-shadow: $shadow-card;
+  }
 }

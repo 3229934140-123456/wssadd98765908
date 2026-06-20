@@ -1,4 +1,26 @@
-import { Order, TemperaturePoint, SwitchNode, ProgressStep, AbnormalPeriod } from '@/types';
+import { Order, TemperaturePoint, SwitchNode, ProgressStep, AbnormalPeriod, WarningInfo, AcceptanceConclusion } from '@/types';
+
+const STORAGE_KEY_PREFIX = 'cold_chain_';
+
+const saveToStorage = (key: string, data: any) => {
+  try {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    localStorage.setItem(fullKey, JSON.stringify(data));
+  } catch (e) {
+    console.error('[Storage] 保存数据失败', e);
+  }
+};
+
+const loadFromStorage = (key: string): any => {
+  try {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    const data = localStorage.getItem(fullKey);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error('[Storage] 读取数据失败', e);
+    return null;
+  }
+};
 
 const generateTempHistory = (baseTemp: number, count: number = 48): TemperaturePoint[] => {
   const history: TemperaturePoint[] = [];
@@ -35,9 +57,27 @@ const generateAbnormalHistory = (): TemperaturePoint[] => {
   return history;
 };
 
+const generateWarningHistory = (): TemperaturePoint[] => {
+  const history: TemperaturePoint[] = [];
+  const now = new Date();
+  for (let i = 47; i >= 0; i--) {
+    const time = new Date(now.getTime() - i * 30 * 60 * 1000);
+    let temp = 3.5;
+    if (i < 15) {
+      temp = 3.5 + (15 - i) * 0.1;
+    }
+    const variation = (Math.random() - 0.5) * 0.5;
+    history.push({
+      time: time.toISOString(),
+      temperature: Math.round((temp + variation) * 10) / 10
+    });
+  }
+  return history;
+};
+
 const now = new Date();
 
-export const orders: Order[] = [
+const baseOrders: Order[] = [
   {
     id: '1',
     orderNo: 'CC20240615001',
@@ -67,7 +107,9 @@ export const orders: Order[] = [
       { time: new Date(now.getTime() - 3 * 60 * 55 * 1000).toISOString(), type: 'door_close', description: '货门关闭，继续制冷' }
     ],
     abnormalPeriods: [],
-    isAbnormal: false
+    isAbnormal: false,
+    hasRemark: false,
+    hasReview: false
   },
   {
     id: '2',
@@ -114,7 +156,9 @@ export const orders: Order[] = [
       { id: 's4', title: '温度恢复中', description: '预计15分钟内恢复正常', time: '', completed: false, current: false }
     ],
     isAbnormal: true,
-    abnormalDesc: '温度偏高，正在恢复中'
+    abnormalDesc: '温度偏高，正在恢复中',
+    hasRemark: false,
+    hasReview: false
   },
   {
     id: '3',
@@ -130,7 +174,7 @@ export const orders: Order[] = [
     currentTemp: 4.8,
     targetTempMin: 2,
     targetTempMax: 8,
-    tempStatus: 'normal',
+    tempStatus: 'warning',
     coolerMode: 'plug_in',
     coolerModeText: '等待装卸插电中',
     estimatedArrival: new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString(),
@@ -138,12 +182,21 @@ export const orders: Order[] = [
     distance: '约320公里',
     progressPercent: 5,
     departureTime: '',
-    tempHistory: generateTempHistory(5),
+    tempHistory: generateWarningHistory(),
     switchNodes: [
       { time: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), type: 'plug_to_oil', description: '车辆到站，接通电源' }
     ],
     abnormalPeriods: [],
-    isAbnormal: false
+    isAbnormal: false,
+    warningInfo: {
+      enabled: true,
+      direction: 'up',
+      diff: 3.2,
+      currentAction: '装卸货期间保持插电制冷',
+      estimatedRecovery: '装车完成后出发即恢复正常'
+    },
+    hasRemark: false,
+    hasReview: false
   },
   {
     id: '4',
@@ -173,7 +226,17 @@ export const orders: Order[] = [
       { time: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), type: 'oil_to_plug', description: '到达目的地' }
     ],
     abnormalPeriods: [],
-    isAbnormal: false
+    isAbnormal: false,
+    acceptanceConclusion: {
+      result: 'normal',
+      resultText: '正常验收',
+      reason: '全程温度稳定，无异常',
+      remark: '货物完好，无解冻现象',
+      relatedAbnormalIds: [],
+      submitTime: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString()
+    },
+    hasRemark: true,
+    hasReview: false
   },
   {
     id: '5',
@@ -211,18 +274,79 @@ export const orders: Order[] = [
         remark: '客户已确认不影响品质，正常签收'
       }
     ],
-    isAbnormal: false
+    isAbnormal: false,
+    acceptanceConclusion: {
+      result: 'deduct',
+      resultText: '扣损验收',
+      reason: '温度异常导致部分草莓变软',
+      remark: '约5%的草莓有轻微变软，扣除对应货款',
+      relatedAbnormalIds: ['ab2'],
+      submitTime: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000).toISOString()
+    },
+    hasRemark: true,
+    hasReview: false
   }
 ];
 
+export const orders: Order[] = baseOrders.map(order => {
+  const savedData = loadFromStorage(`order_${order.id}`);
+  if (savedData) {
+    return { ...order, ...savedData };
+  }
+  return order;
+});
+
 export const getOrderById = (id: string): Order | undefined => {
-  return orders.find(order => order.id === id);
+  const order = orders.find(order => order.id === id);
+  if (order) {
+    const savedData = loadFromStorage(`order_${id}`);
+    if (savedData) {
+      return { ...order, ...savedData };
+    }
+  }
+  return order;
+};
+
+export const updateOrderData = (id: string, updates: Partial<Order>): void => {
+  const index = orders.findIndex(o => o.id === id);
+  if (index !== -1) {
+    orders[index] = { ...orders[index], ...updates };
+    saveToStorage(`order_${id}`, updates);
+  }
+};
+
+export const saveAbnormalRemark = (orderId: string, abnormalId: string, remark: string): void => {
+  const order = getOrderById(orderId);
+  if (order) {
+    const abnormalPeriods = order.abnormalPeriods.map(ap => 
+      ap.id === abnormalId ? { ...ap, remark } : ap
+    );
+    const hasRemark = abnormalPeriods.some(ap => ap.remark && ap.remark.length > 0);
+    updateOrderData(orderId, { abnormalPeriods, hasRemark });
+  }
+};
+
+export const saveAcceptanceConclusion = (orderId: string, conclusion: AcceptanceConclusion): void => {
+  const hasReview = conclusion.result === 'reject';
+  updateOrderData(orderId, { 
+    acceptanceConclusion: conclusion,
+    hasReview,
+    status: 'completed'
+  });
 };
 
 export const getInTransitOrders = (): Order[] => {
-  return orders.filter(o => o.status === 'in_transit' || o.status === 'loading');
+  return orders.filter(o => {
+    const savedData = loadFromStorage(`order_${o.id}`);
+    const order = savedData ? { ...o, ...savedData } : o;
+    return order.status === 'in_transit' || order.status === 'loading';
+  });
 };
 
 export const getHistoryOrders = (): Order[] => {
-  return orders.filter(o => o.status === 'completed' || o.status === 'arrived');
+  return orders.filter(o => {
+    const savedData = loadFromStorage(`order_${o.id}`);
+    const order = savedData ? { ...o, ...savedData } : o;
+    return order.status === 'completed' || order.status === 'arrived';
+  });
 };

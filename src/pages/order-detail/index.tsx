@@ -9,9 +9,12 @@ import { getOrderById } from '@/data/orders';
 import { Order } from '@/types';
 import { formatDate, getEtaText, getTimeDiffText } from '@/utils';
 
+type RecordTabType = 'switch' | 'door';
+
 const OrderDetailPage: React.FC = () => {
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
+  const [recordTab, setRecordTab] = useState<RecordTabType>('switch');
 
   useEffect(() => {
     const id = router.params.id;
@@ -60,6 +63,110 @@ const OrderDetailPage: React.FC = () => {
   }
 
   const showReceiptBtn = order.status === 'completed' || order.status === 'arrived';
+  
+  const switchNodes = order.switchNodes.filter(
+    n => n.type === 'oil_to_plug' || n.type === 'plug_to_oil'
+  );
+  const doorNodes = order.switchNodes.filter(
+    n => n.type === 'door_open' || n.type === 'door_close'
+  );
+  const currentRecords = recordTab === 'switch' ? switchNodes : doorNodes;
+
+  const renderWarningCard = () => {
+    if (!order.warningInfo?.enabled && order.tempStatus !== 'warning') {
+      return null;
+    }
+
+    const warningInfo = order.warningInfo || {
+      direction: order.currentTemp > order.targetTempMax ? 'up' : 'down',
+      diff: order.currentTemp > order.targetTempMax 
+        ? Math.abs(order.currentTemp - order.targetTempMax).toFixed(1)
+        : Math.abs(order.targetTempMin - order.currentTemp).toFixed(1),
+      currentAction: '系统已自动加强制冷',
+      estimatedRecovery: '预计5分钟内恢复正常'
+    };
+
+    return (
+      <View className={styles.warningCard}>
+        <View className={styles.warningHeader}>
+          <Text className={styles.warningIcon}>⚠️</Text>
+          <Text className={styles.warningTitle}>温度接近临界值</Text>
+        </View>
+        <View className={styles.warningBody}>
+          <View className={styles.warningItem}>
+            <Text className={styles.warningLabel}>距离上限</Text>
+            <Text className={styles.warningValue}>
+              <Text className={styles.highlight}>{order.targetTempMax - order.currentTemp}℃</Text>
+            </Text>
+          </View>
+          <View className={styles.warningItem}>
+            <Text className={styles.warningLabel}>距离下限</Text>
+            <Text className={styles.warningValue}>
+              <Text className={styles.highlight}>{order.currentTemp - order.targetTempMin}℃</Text>
+            </Text>
+          </View>
+          <View className={styles.warningItem}>
+            <Text className={styles.warningLabel}>当前动作</Text>
+            <Text className={styles.warningValue}>{warningInfo.currentAction}</Text>
+          </View>
+          <View className={styles.warningItem}>
+            <Text className={styles.warningLabel}>预计恢复</Text>
+            <Text className={styles.warningValue}>{warningInfo.estimatedRecovery}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderConclusion = () => {
+    if (!order.acceptanceConclusion) return null;
+    const conclusion = order.acceptanceConclusion;
+    
+    return (
+      <View className={styles.conclusionSection}>
+        <View className={styles.conclusionHeader}>
+          <Text className={styles.conclusionTitle}>验收结论</Text>
+          <View
+            className={classnames(
+              styles.conclusionBadge,
+              styles[conclusion.result || 'normal']
+            )}
+          >
+            <Text>{conclusion.resultText}</Text>
+          </View>
+        </View>
+        <View className={styles.conclusionItem}>
+          <Text className={styles.conclusionLabel}>验收原因</Text>
+          <Text className={styles.conclusionValue}>{conclusion.reason}</Text>
+        </View>
+        {conclusion.remark && (
+          <View className={styles.conclusionItem}>
+            <Text className={styles.conclusionLabel}>货主备注</Text>
+            <Text className={styles.conclusionValue}>{conclusion.remark}</Text>
+          </View>
+        )}
+        {conclusion.relatedAbnormalIds && conclusion.relatedAbnormalIds.length > 0 && (
+          <View className={styles.conclusionItem}>
+            <Text className={styles.conclusionLabel}>关联异常</Text>
+            <View className={styles.relatedAbnormals}>
+              {conclusion.relatedAbnormalIds.map(id => {
+                const abnormal = order.abnormalPeriods.find(a => a.id === id);
+                return (
+                  <View key={id} className={styles.relatedTag}>
+                    <Text>{abnormal?.description || '异常时段'}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+        <View className={styles.conclusionItem}>
+          <Text className={styles.conclusionLabel}>提交时间</Text>
+          <Text className={styles.conclusionValue}>{formatDate(conclusion.submitTime)}</Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <ScrollView scrollY className={styles.page}>
@@ -74,6 +181,8 @@ const OrderDetailPage: React.FC = () => {
           lastDoorOpenTime={order.lastDoorOpenTime}
         />
 
+        {order.tempStatus === 'warning' && renderWarningCard()}
+
         {order.isAbnormal && order.handlingProgress && (
           <>
             <View className={styles.abnormalBanner}>
@@ -83,6 +192,8 @@ const OrderDetailPage: React.FC = () => {
             <ProgressTimeline steps={order.handlingProgress} />
           </>
         )}
+
+        {renderConclusion()}
 
         <View className={styles.section}>
           <View className={styles.sectionTitle}>
@@ -159,10 +270,24 @@ const OrderDetailPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionTitle}>
             <View className={styles.titleIcon} />
-            <Text>开关门记录</Text>
+            <Text>运输记录</Text>
           </View>
-          {order.switchNodes.length > 0 ? (
-            order.switchNodes.slice().reverse().map((node, index) => (
+          <View className={styles.tabContainer}>
+            <View
+              className={classnames(styles.tabItem, recordTab === 'switch' && styles.active)}
+              onClick={() => setRecordTab('switch')}
+            >
+              <Text>油电切换 ({switchNodes.length})</Text>
+            </View>
+            <View
+              className={classnames(styles.tabItem, recordTab === 'door' && styles.active)}
+              onClick={() => setRecordTab('door')}
+            >
+              <Text>开关门 ({doorNodes.length})</Text>
+            </View>
+          </View>
+          {currentRecords.length > 0 ? (
+            currentRecords.slice().reverse().map((node, index) => (
               <View key={index} className={styles.doorRecord}>
                 <View>
                   <View className={styles.doorDesc}>{node.description}</View>
@@ -178,7 +303,8 @@ const OrderDetailPage: React.FC = () => {
                 >
                   {node.type === 'door_open' && '开门'}
                   {node.type === 'door_close' && '关门'}
-                  {(node.type === 'oil_to_plug' || node.type === 'plug_to_oil') && '切换'}
+                  {node.type === 'oil_to_plug' && '插电'}
+                  {node.type === 'plug_to_oil' && '油机'}
                 </View>
               </View>
             ))

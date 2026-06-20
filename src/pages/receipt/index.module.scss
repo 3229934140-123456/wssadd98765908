@@ -3,7 +3,7 @@
 .page {
   min-height: 100vh;
   background: $color-bg-page;
-  padding-bottom: 180rpx;
+  padding-bottom: 280rpx;
 }
 
 .content {
@@ -16,17 +16,45 @@
   padding: $spacing-xl;
   color: $color-text-white;
   margin-bottom: $spacing-md;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60rpx;
+    right: -40rpx;
+    width: 200rpx;
+    height: 200rpx;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -80rpx;
+    left: -30rpx;
+    width: 160rpx;
+    height: 160rpx;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+  }
 }
 
 .summaryTitle {
   font-size: $font-size-md;
   opacity: 0.9;
   margin-bottom: $spacing-md;
+  position: relative;
+  z-index: 1;
 }
 
 .summaryStats {
   display: flex;
   gap: $spacing-lg;
+  position: relative;
+  z-index: 1;
 }
 
 .summaryItem {
@@ -42,6 +70,258 @@
     font-size: $font-size-xs;
     opacity: 0.8;
   }
+}
+
+.decisionSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.decisionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.decisionIcon {
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-primary-bg;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.resultOptions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.resultOption {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+
+  &.selected {
+    border-color: $color-primary;
+    background: $color-primary-bg;
+  }
+}
+
+.radio {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 3rpx solid $color-border;
+  margin-right: $spacing-md;
+  position: relative;
+  flex-shrink: 0;
+
+  .selected & {
+    border-color: $color-primary;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16rpx;
+      height: 16rpx;
+      border-radius: 50%;
+      background: $color-primary;
+    }
+  }
+}
+
+.resultInfo {
+  flex: 1;
+}
+
+.resultName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+
+  &.normal {
+    color: $color-success;
+  }
+
+  &.deduct {
+    color: $color-warning;
+  }
+
+  &.reject {
+    color: $color-error;
+  }
+}
+
+.resultDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.reasonSection {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+
+  .required {
+    color: $color-error;
+  }
+}
+
+.reasonOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.reasonTag {
+  padding: 12rpx 24rpx;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &.selected {
+    border-color: $color-primary;
+    background: $color-primary-bg;
+    color: $color-primary;
+  }
+}
+
+.remarkSection {
+  margin-bottom: $spacing-lg;
+}
+
+.remarkInput {
+  width: 100%;
+  min-height: 160rpx;
+  background: $color-bg-gray;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.remarkHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+}
+
+.abnormalSection {
+  margin-bottom: $spacing-lg;
+}
+
+.abnormalList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.abnormalSelectItem {
+  display: flex;
+  align-items: flex-start;
+  padding: $spacing-md;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+
+  &.selected {
+    border-color: $color-error;
+    background: $color-error-bg;
+  }
+}
+
+.checkbox {
+  width: 32rpx;
+  height: 32rpx;
+  border: 3rpx solid $color-border;
+  border-radius: 6rpx;
+  margin-right: $spacing-md;
+  margin-top: 4rpx;
+  position: relative;
+  flex-shrink: 0;
+
+  .selected & {
+    border-color: $color-error;
+    background: $color-error;
+
+    &::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      color: #fff;
+      font-size: 20rpx;
+      font-weight: bold;
+    }
+  }
+}
+
+.abnormalInfo {
+  flex: 1;
+}
+
+.abnormalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.abnormalName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-error;
+}
+
+.abnormalTemp {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.abnormalTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 8rpx;
+}
+
+.abnormalRemark {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: rgba(255, 255, 255, 0.6);
+  padding: $spacing-sm;
+  border-radius: $radius-sm;
 }
 
 .section {
@@ -110,10 +390,6 @@
   &.plug {
     background: $color-info-bg;
   }
-
-  &.door {
-    background: $color-warning-bg;
-  }
 }
 
 .switchInfo {
@@ -132,158 +408,57 @@
   color: $color-text-tertiary;
 }
 
-.abnormalList {
+.eventList {
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
-}
-
-.abnormalItem {
-  border: 2rpx solid $color-error-bg;
-  border-radius: $radius-md;
-  padding: $spacing-md;
-  background: $color-error-bg;
-  position: relative;
-}
-
-.abnormalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: $spacing-sm;
-}
-
-.abnormalTitle {
-  font-size: $font-size-md;
-  font-weight: $font-weight-medium;
-  color: $color-error;
-}
-
-.abnormalTemp {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-}
-
-.abnormalTime {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-bottom: $spacing-sm;
-}
-
-.abnormalDesc {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  line-height: 1.5;
-  margin-bottom: $spacing-sm;
-}
-
-.remarkSection {
-  border-top: 1rpx dashed $color-border;
-  padding-top: $spacing-sm;
-}
-
-.remarkLabel {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  margin-bottom: 8rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.remarkText {
-  font-size: $font-size-sm;
-  color: $color-text-primary;
-  line-height: 1.5;
-  background: $color-bg-card;
-  padding: $spacing-sm;
-  border-radius: $radius-sm;
-}
-
-.addRemarkBtn {
-  font-size: $font-size-xs;
-  color: $color-primary;
-}
-
-.remarkInput {
-  width: 100%;
-  min-height: 120rpx;
-  background: $color-bg-card;
-  border: 2rpx solid $color-border;
-  border-radius: $radius-sm;
-  padding: $spacing-sm;
-  font-size: $font-size-sm;
-  color: $color-text-primary;
-  box-sizing: border-box;
-}
-
-.remarkActions {
-  display: flex;
-  justify-content: flex-end;
   gap: $spacing-sm;
-  margin-top: $spacing-sm;
 }
 
-.remarkBtn {
-  padding: 8rpx 24rpx;
-  border-radius: $radius-round;
-  font-size: $font-size-xs;
-
-  &.cancel {
-    background: $color-bg-gray;
-    color: $color-text-secondary;
-  }
-
-  &.confirm {
-    background: $color-primary;
-    color: $color-text-white;
-  }
-}
-
-.footerBar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: $color-bg-card;
-  padding: $spacing-md $page-padding;
-  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
-  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+.eventItem {
   display: flex;
+  align-items: center;
   gap: $spacing-md;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
-.btn {
-  flex: 1;
-  height: 96rpx;
-  border-radius: $radius-button;
+.eventIcon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size-md;
-  font-weight: $font-weight-medium;
-  transition: all $transition-fast;
+  font-size: 28rpx;
+  flex-shrink: 0;
 
-  &:active {
-    opacity: 0.9;
-    transform: scale(0.98);
+  &.open {
+    background: $color-warning-bg;
+  }
+
+  &.close {
+    background: $color-success-bg;
   }
 }
 
-.btnPrimary {
-  background: $color-primary;
-  color: $color-text-white;
+.eventInfo {
+  flex: 1;
+  min-width: 0;
 }
 
-.btnOutline {
-  background: $color-bg-card;
-  color: $color-warning;
-  border: 2rpx solid $color-warning;
+.eventDesc {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
 }
 
-.btnDanger {
-  background: $color-error;
-  color: $color-text-white;
+.eventTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
 }
 
 .tempInfo {
@@ -317,4 +492,165 @@
   &.min .value {
     color: $color-primary;
   }
+}
+
+.footerBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.footerSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.selectedResult {
+  font-weight: $font-weight-medium;
+
+  &.normal {
+    color: $color-success;
+  }
+
+  &.deduct {
+    color: $color-warning;
+  }
+
+  &.reject {
+    color: $color-error;
+  }
+}
+
+.btnRow {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.btn {
+  flex: 1;
+  height: 96rpx;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-text-white;
+
+  &.normal {
+    background: $color-success;
+  }
+
+  &.deduct {
+    background: $color-warning;
+  }
+
+  &.reject {
+    background: $color-error;
+  }
+}
+
+.btnOutline {
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  border: 2rpx solid $color-border;
+}
+
+.existingConclusion {
+  background: linear-gradient(135deg, rgba(14, 138, 255, 0.1) 0%, rgba(14, 138, 255, 0.05) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  border-left: 8rpx solid $color-primary;
+}
+
+.existingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.existingTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.existingBadge {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+
+  &.normal {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &.deduct {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.reject {
+    background: $color-error-bg;
+    color: $color-error;
+  }
+}
+
+.existingItem {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-xs 0;
+}
+
+.existingLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+  width: 120rpx;
+}
+
+.existingValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.existingTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.existingTag {
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  background: $color-error-bg;
+  color: $color-error;
+  border-radius: $radius-xs;
 }
