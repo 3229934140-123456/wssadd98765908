@@ -25,6 +25,9 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick }) => {
   };
 
   const renderEta = () => {
+    if (order.status === 'reviewing') {
+      return '复核中';
+    }
     if (order.status === 'completed') {
       return '已送达';
     }

@@ -106,6 +106,319 @@
 .highlight {
   color: $color-warning;
   font-weight: $font-weight-bold;
+
+  &.danger {
+    color: $color-error;
+  }
+}
+
+.warningSubTitle {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-left: auto;
+}
+
+.warningSectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  &::before {
+    content: '';
+    width: 4rpx;
+    height: 24rpx;
+    background: $color-warning;
+    border-radius: 2rpx;
+  }
+}
+
+.responsiblePerson {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: rgba(255, 125, 0, 0.08);
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+}
+
+.respAvatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: $color-warning;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+}
+
+.respInfo {
+  flex: 1;
+
+  .respName {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    margin-bottom: 4rpx;
+  }
+
+  .respRole {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+}
+
+.respPhone {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: $color-success-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+}
+
+.statusChecks {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.statusCheck {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+
+  &.done {
+    background: $color-success-bg;
+  }
+}
+
+.statusDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: $color-text-tertiary;
+  flex-shrink: 0;
+
+  .done & {
+    background: $color-success;
+  }
+}
+
+.statusText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+
+  .done & {
+    color: $color-success;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.statusTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.countdownBox {
+  background: rgba(255, 125, 0, 0.08);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  text-align: center;
+  margin-bottom: $spacing-md;
+}
+
+.countdownLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.countdownValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-warning;
+  font-family: monospace;
+}
+
+.disposalList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.disposalItem {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-sm 0;
+}
+
+.disposalIcon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+
+  &.system {
+    background: $color-info-bg;
+  }
+
+  &.driver {
+    background: $color-warning-bg;
+  }
+
+  &.dispatch {
+    background: $color-success-bg;
+  }
+
+  &.owner {
+    background: $color-primary-bg;
+  }
+}
+
+.disposalContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.disposalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4rpx;
+}
+
+.disposalActor {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.disposalTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.disposalAction {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.disposalRemark {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+  background: $color-bg-gray;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-xs;
+}
+
+.reviewBtn {
+  background: $color-error;
+  color: #fff;
+  margin-bottom: $spacing-md;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 16rpx rgba(245, 63, 63, 0.2);
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.reviewBtnLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.reviewBtnIcon {
+  font-size: 32rpx;
+}
+
+.reviewBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+}
+
+.reviewBtnBadge {
+  font-size: $font-size-xs;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+}
+
+.reviewBtnArrow {
+  font-size: $font-size-lg;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.warningCardDown {
+  background: linear-gradient(135deg, rgba(14, 138, 255, 0.1) 0%, rgba(14, 138, 255, 0.05) 100%);
+  border-left-color: $color-primary;
+
+  .warningTitle {
+    color: $color-primary;
+  }
+
+  .highlight {
+    color: $color-primary;
+  }
+
+  .warningItem {
+    border-bottom-color: rgba(14, 138, 255, 0.2);
+  }
+
+  .warningSectionTitle::before {
+    background: $color-primary;
+  }
+
+  .responsiblePerson {
+    background: rgba(14, 138, 255, 0.08);
+  }
+
+  .respAvatar {
+    background: $color-primary;
+  }
+
+  .countdownBox {
+    background: rgba(14, 138, 255, 0.08);
+  }
+
+  .countdownValue {
+    color: $color-primary;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-xl 0;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
 }
 
 .conclusionSection {

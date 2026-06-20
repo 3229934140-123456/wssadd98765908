@@ -1,10 +1,14 @@
-export type OrderStatus = 'in_transit' | 'loading' | 'arrived' | 'completed';
+export type OrderStatus = 'in_transit' | 'loading' | 'arrived' | 'completed' | 'reviewing';
 
 export type CoolerMode = 'cooling' | 'plug_in' | 'oil' | 'standby';
 
 export type TempStatus = 'normal' | 'warning' | 'danger';
 
 export type AcceptanceResult = 'normal' | 'deduct' | 'reject' | null;
+
+export type ReviewStatus = 'pending' | 'processing' | 'completed' | 'rejected';
+
+export type ActionType = 'driver_confirm' | 'dispatch_action' | 'system_notice' | 'owner_remark';
 
 export interface TemperaturePoint {
   time: string;
@@ -26,12 +30,36 @@ export interface ProgressStep {
   current: boolean;
 }
 
+export interface ResponsiblePerson {
+  name: string;
+  role: string;
+  phone: string;
+  avatar?: string;
+}
+
+export interface DisposalAction {
+  id: string;
+  type: ActionType;
+  actor: string;
+  role: string;
+  action: string;
+  time: string;
+  remark?: string;
+}
+
 export interface WarningInfo {
   enabled: boolean;
   direction: 'up' | 'down';
   diff: number;
   currentAction: string;
   estimatedRecovery: string;
+  countdownSeconds: number;
+  responsiblePerson: ResponsiblePerson;
+  driverConfirmed: boolean;
+  driverConfirmTime?: string;
+  dispatchAction: string;
+  dispatchTime?: string;
+  disposalActions: DisposalAction[];
 }
 
 export interface AcceptanceConclusion {
@@ -41,6 +69,27 @@ export interface AcceptanceConclusion {
   remark: string;
   relatedAbnormalIds: string[];
   submitTime: string;
+}
+
+export interface ReviewRecord {
+  id: string;
+  type: ActionType;
+  actor: string;
+  role: string;
+  content: string;
+  time: string;
+}
+
+export interface ReviewInfo {
+  reviewId: string;
+  status: ReviewStatus;
+  statusText: string;
+  submitTime: string;
+  currentHandler: ResponsiblePerson;
+  relatedAbnormalIds: string[];
+  ownerRemark: string;
+  acceptanceReason: string;
+  records: ReviewRecord[];
 }
 
 export interface AbnormalPeriod {
@@ -85,6 +134,7 @@ export interface Order {
   abnormalDesc?: string;
   warningInfo?: WarningInfo;
   acceptanceConclusion?: AcceptanceConclusion;
+  reviewInfo?: ReviewInfo;
   hasRemark?: boolean;
   hasReview?: boolean;
 }

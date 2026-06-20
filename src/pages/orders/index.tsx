@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import OrderCard from '@/components/OrderCard';
@@ -11,13 +11,26 @@ type TabType = 'inTransit' | 'history';
 
 const OrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('inTransit');
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
-  const inTransitOrders = useMemo(() => getInTransitOrders(), []);
-  const historyOrders = useMemo(() => getHistoryOrders(), []);
+  const loadOrders = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
+  useDidShow(() => {
+    loadOrders();
+  });
+
+  const inTransitOrders = useMemo(() => getInTransitOrders(), [refreshKey]);
+  const historyOrders = useMemo(() => getHistoryOrders(), [refreshKey]);
 
   const abnormalCount = useMemo(() => {
     return inTransitOrders.filter(o => o.isAbnormal).length;
   }, [inTransitOrders]);
+
+  const reviewCount = useMemo(() => {
+    return historyOrders.filter(o => o.status === 'reviewing').length;
+  }, [historyOrders]);
 
   const currentList = activeTab === 'inTransit' ? inTransitOrders : historyOrders;
 
@@ -26,6 +39,7 @@ const OrdersPage: React.FC = () => {
   };
 
   const onPullDownRefresh = () => {
+    loadOrders();
     setTimeout(() => {
       Taro.stopPullDownRefresh();
     }, 1000);
@@ -52,8 +66,8 @@ const OrdersPage: React.FC = () => {
             <View className={styles.statLabel}>异常提醒</View>
           </View>
           <View className={styles.statCard}>
-            <View className={styles.statNum}>{historyOrders.length}</View>
-            <View className={styles.statLabel}>历史订单</View>
+            <View className={styles.statNum}>{reviewCount}</View>
+            <View className={styles.statLabel}>复核中</View>
           </View>
         </View>
       </View>
@@ -76,7 +90,7 @@ const OrdersPage: React.FC = () => {
       <View className={styles.listContainer}>
         {currentList.length > 0 ? (
           currentList.map((order: Order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard key={order.id + '_' + refreshKey} order={order} />
           ))
         ) : (
           <View className={styles.emptyState}>

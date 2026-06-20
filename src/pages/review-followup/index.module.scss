@@ -1,0 +1,448 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.content {
+  padding: $spacing-md $page-padding;
+}
+
+.statusHeader {
+  background: linear-gradient(135deg, $color-error 0%, rgba(245, 63, 63, 0.8) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  color: $color-text-white;
+  margin-bottom: $spacing-md;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -80rpx;
+    right: -60rpx;
+    width: 240rpx;
+    height: 240rpx;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+}
+
+.statusTitle {
+  font-size: $font-size-md;
+  opacity: 0.9;
+  margin-bottom: $spacing-sm;
+  position: relative;
+  z-index: 1;
+}
+
+.statusMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.statusLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.statusIcon {
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+}
+
+.statusText {
+  .statusValue {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: 4rpx;
+  }
+
+  .reviewId {
+    font-size: $font-size-xs;
+    opacity: 0.8;
+  }
+}
+
+.statusTime {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+  text-align: right;
+}
+
+.section {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.titleIcon {
+  width: 8rpx;
+  height: 32rpx;
+  background: $color-primary;
+  border-radius: 4rpx;
+}
+
+.badge {
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-sm;
+
+  &.danger {
+    background: $color-error-bg;
+    color: $color-error;
+  }
+
+  &.warning {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+}
+
+.handlerSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+}
+
+.handlerAvatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+}
+
+.handlerInfo {
+  flex: 1;
+
+  .handlerName {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    margin-bottom: 4rpx;
+  }
+
+  .handlerRole {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+}
+
+.handlerPhone {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: $color-success-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.infoItem {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-sm 0;
+}
+
+.infoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+  width: 120rpx;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.abnormalList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.abnormalItem {
+  padding: $spacing-md;
+  background: $color-error-bg;
+  border-radius: $radius-md;
+  border-left: 6rpx solid $color-error;
+}
+
+.abnormalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.abnormalName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-error;
+}
+
+.abnormalTemp {
+  font-size: $font-size-xs;
+  color: $color-error;
+  background: rgba(245, 63, 63, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.abnormalTime {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: 8rpx;
+}
+
+.abnormalRemark {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: rgba(255, 255, 255, 0.6);
+  padding: $spacing-sm;
+  border-radius: $radius-sm;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 40rpx;
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: $spacing-lg;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timelineDot {
+  position: absolute;
+  left: -40rpx;
+  top: 8rpx;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: $color-border;
+  border: 4rpx solid $color-bg-card;
+  box-shadow: 0 0 0 2rpx $color-border;
+
+  &.system {
+    background: $color-info;
+    box-shadow: 0 0 0 2rpx $color-info;
+  }
+
+  &.driver {
+    background: $color-warning;
+    box-shadow: 0 0 0 2rpx $color-warning;
+  }
+
+  &.dispatch {
+    background: $color-success;
+    box-shadow: 0 0 0 2rpx $color-success;
+  }
+
+  &.owner {
+    background: $color-primary;
+    box-shadow: 0 0 0 2rpx $color-primary;
+  }
+}
+
+.timelineLine {
+  position: absolute;
+  left: -29rpx;
+  top: 36rpx;
+  bottom: -8rpx;
+  width: 2rpx;
+  background: $color-divider;
+
+  .timelineItem:last-child & {
+    display: none;
+  }
+}
+
+.timelineContent {
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.timelineActor {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.timelineTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.timelineBody {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.inputSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160rpx;
+  background: $color-bg-gray;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.charCount {
+  text-align: right;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.footerBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: $spacing-md;
+}
+
+.btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.btnPrimary {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.btnOutline {
+  background: $color-bg-card;
+  color: $color-primary;
+  border: 2rpx solid $color-primary;
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-xl 0;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+}
+
+.orderInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-primary-bg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+}
+
+.orderIcon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.orderDetail {
+  flex: 1;
+
+  .orderNo {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    margin-bottom: 4rpx;
+  }
+
+  .cargoName {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+}

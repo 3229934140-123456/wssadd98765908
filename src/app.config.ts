@@ -4,7 +4,8 @@ export default defineAppConfig({
     'pages/messages/index',
     'pages/mine/index',
     'pages/order-detail/index',
-    'pages/receipt/index'
+    'pages/receipt/index',
+    'pages/review-followup/index'
   ],
   window: {
     backgroundTextStyle: 'light',

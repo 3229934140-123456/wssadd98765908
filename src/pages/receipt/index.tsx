@@ -116,8 +116,8 @@ const ReceiptPage: React.FC = () => {
       Taro.showToast({ title: '请选择验收结果', icon: 'none' });
       return;
     }
-    if (selectedResult !== 'normal' && !selectedReason) {
-      Taro.showToast({ title: '请选择异常原因', icon: 'none' });
+    if (!selectedReason) {
+      Taro.showToast({ title: '请选择验收原因', icon: 'none' });
       return;
     }
 
@@ -285,10 +285,10 @@ const ReceiptPage: React.FC = () => {
               </View>
             </View>
 
-            {selectedResult && selectedResult !== 'normal' && (
+            {selectedResult && (
               <View className={styles.reasonSection}>
                 <View className={styles.sectionLabel}>
-                  <Text>异常原因</Text>
+                  <Text>{selectedResult === 'normal' ? '验收原因' : '异常原因'}</Text>
                   <Text className={styles.required}>*</Text>
                 </View>
                 <View className={styles.reasonOptions}>

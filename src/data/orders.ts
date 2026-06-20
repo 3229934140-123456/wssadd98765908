@@ -1,4 +1,4 @@
-import { Order, TemperaturePoint, SwitchNode, ProgressStep, AbnormalPeriod, WarningInfo, AcceptanceConclusion } from '@/types';
+import { Order, TemperaturePoint, SwitchNode, ProgressStep, AbnormalPeriod, WarningInfo, AcceptanceConclusion, ReviewInfo, ReviewRecord, DisposalAction } from '@/types';
 
 const STORAGE_KEY_PREFIX = 'cold_chain_';
 
@@ -193,7 +193,45 @@ const baseOrders: Order[] = [
       direction: 'up',
       diff: 3.2,
       currentAction: '装卸货期间保持插电制冷',
-      estimatedRecovery: '装车完成后出发即恢复正常'
+      estimatedRecovery: '预计30分钟内恢复',
+      countdownSeconds: 1800,
+      responsiblePerson: {
+        name: '王调度',
+        role: '调度专员',
+        phone: '138****1234'
+      },
+      driverConfirmed: true,
+      driverConfirmTime: new Date(now.getTime() - 15 * 60 * 1000).toISOString(),
+      dispatchAction: '已远程确认冷机运行状态正常',
+      dispatchTime: new Date(now.getTime() - 10 * 60 * 1000).toISOString(),
+      disposalActions: [
+        {
+          id: 'd1',
+          type: 'system_notice',
+          actor: '系统',
+          role: '系统',
+          action: '检测到温度接近上限，触发预警',
+          time: new Date(now.getTime() - 20 * 60 * 1000).toISOString()
+        },
+        {
+          id: 'd2',
+          type: 'driver_confirm',
+          actor: '王师傅',
+          role: '司机',
+          action: '已确认货门关闭，冷机运行正常',
+          time: new Date(now.getTime() - 15 * 60 * 1000).toISOString(),
+          remark: '正在装车，预计30分钟后出发'
+        },
+        {
+          id: 'd3',
+          type: 'dispatch_action',
+          actor: '李调度',
+          role: '调度专员',
+          action: '远程检查冷机参数，确认设置正确',
+          time: new Date(now.getTime() - 10 * 60 * 1000).toISOString(),
+          remark: '目标温区2-8℃，当前设置正确'
+        }
+      ]
     },
     hasRemark: false,
     hasReview: false
@@ -285,6 +323,116 @@ const baseOrders: Order[] = [
     },
     hasRemark: true,
     hasReview: false
+  },
+  {
+    id: '6',
+    orderNo: 'CC20240612005',
+    cargoName: '进口三文鱼 200箱',
+    cargoType: '冷冻水产',
+    origin: '上海洋山港冷库',
+    destination: '苏州盒马鲜生配送中心',
+    plateNumber: '苏E·J4458',
+    driverName: '赵师傅',
+    driverPhone: '135****6677',
+    status: 'reviewing',
+    currentTemp: -12.5,
+    targetTempMin: -20,
+    targetTempMax: -15,
+    tempStatus: 'danger',
+    coolerMode: 'standby',
+    coolerModeText: '复核中',
+    estimatedArrival: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    lastDoorOpenTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    distance: '已送达',
+    progressPercent: 100,
+    departureTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 8 * 60 * 60 * 1000).toISOString(),
+    tempHistory: generateAbnormalHistory().map(p => ({ ...p, temperature: p.temperature - 15 })),
+    switchNodes: [
+      { time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 8 * 60 * 60 * 1000).toISOString(), type: 'plug_to_oil', description: '出库出发，切换油机运行' },
+      { time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(), type: 'oil_to_plug', description: '到达目的地' }
+    ],
+    abnormalPeriods: [
+      {
+        id: 'ab3',
+        startTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 5 * 60 * 60 * 1000).toISOString(),
+        endTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000).toISOString(),
+        maxTemp: -8.5,
+        minTemp: -16.2,
+        type: 'cooler_stop',
+        description: '冷机故障停止工作，温度严重升高',
+        remark: '货主拒收，已启动复核流程'
+      },
+      {
+        id: 'ab4',
+        startTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 1.5 * 60 * 60 * 1000).toISOString(),
+        endTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 1 * 60 * 60 * 1000).toISOString(),
+        maxTemp: -10.2,
+        minTemp: -14.8,
+        type: 'over_temp',
+        description: '温度未恢复至目标温区',
+        remark: '冷机重启后温度下降缓慢'
+      }
+    ],
+    isAbnormal: true,
+    abnormalDesc: '冷机故障导致温度异常',
+    acceptanceConclusion: {
+      result: 'reject',
+      resultText: '拒收复核',
+      reason: '冷机故障，温度严重超标',
+      remark: '冷机故障约3小时，最高温度-8.5℃，远超-15℃上限，怀疑部分三文鱼已变质，申请复核',
+      relatedAbnormalIds: ['ab3', 'ab4'],
+      submitTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString()
+    },
+    reviewInfo: {
+      reviewId: 'RV20240612001',
+      status: 'processing',
+      statusText: '处理中',
+      submitTime: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(),
+      currentHandler: {
+        name: '张主管',
+        role: '运营主管',
+        phone: '138****8888'
+      },
+      relatedAbnormalIds: ['ab3', 'ab4'],
+      ownerRemark: '冷机故障约3小时，最高温度-8.5℃，远超-15℃上限，怀疑部分三文鱼已变质',
+      acceptanceReason: '冷机故障，温度严重超标',
+      records: [
+        {
+          id: 'r1',
+          type: 'owner_remark',
+          actor: '王经理',
+          role: '货主',
+          content: '已提交拒收申请，要求质检部门到场检测',
+          time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString()
+        },
+        {
+          id: 'r2',
+          type: 'system_notice',
+          actor: '系统',
+          role: '系统',
+          content: '复核申请已受理，分配给张主管处理',
+          time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 35 * 60 * 1000).toISOString()
+        },
+        {
+          id: 'r3',
+          type: 'dispatch_action',
+          actor: '张主管',
+          role: '运营主管',
+          content: '已联系质检部门，安排2小时内到场检测',
+          time: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000).toISOString()
+        },
+        {
+          id: 'r4',
+          type: 'driver_confirm',
+          actor: '赵师傅',
+          role: '司机',
+          content: '已确认冷机故障期间温度记录，配合后续处理',
+          time: new Date(now.getTime() - 20 * 60 * 1000).toISOString()
+        }
+      ]
+    },
+    hasRemark: true,
+    hasReview: true
   }
 ];
 
@@ -328,11 +476,71 @@ export const saveAbnormalRemark = (orderId: string, abnormalId: string, remark: 
 
 export const saveAcceptanceConclusion = (orderId: string, conclusion: AcceptanceConclusion): void => {
   const hasReview = conclusion.result === 'reject';
-  updateOrderData(orderId, { 
-    acceptanceConclusion: conclusion,
-    hasReview,
-    status: 'completed'
-  });
+  const status = conclusion.result === 'reject' ? 'reviewing' : 'completed';
+  
+  if (conclusion.result === 'reject') {
+    const reviewInfo: ReviewInfo = {
+      reviewId: `RV${Date.now()}`,
+      status: 'pending',
+      statusText: '待处理',
+      submitTime: conclusion.submitTime,
+      currentHandler: {
+        name: '系统',
+        role: '待分配',
+        phone: '400-888-8888'
+      },
+      relatedAbnormalIds: conclusion.relatedAbnormalIds,
+      ownerRemark: conclusion.remark,
+      acceptanceReason: conclusion.reason,
+      records: [
+        {
+          id: `rec${Date.now()}`,
+          type: 'owner_remark',
+          actor: '货主',
+          role: '货主',
+          content: `提交${conclusion.resultText}申请：${conclusion.reason}`,
+          time: conclusion.submitTime
+        }
+      ]
+    };
+    updateOrderData(orderId, { 
+      acceptanceConclusion: conclusion,
+      hasReview,
+      status,
+      reviewInfo
+    });
+  } else {
+    updateOrderData(orderId, { 
+      acceptanceConclusion: conclusion,
+      hasReview,
+      status
+    });
+  }
+};
+
+export const addReviewRecord = (orderId: string, content: string): void => {
+  const order = getOrderById(orderId);
+  if (!order || !order.reviewInfo) return;
+  
+  const newRecord: ReviewRecord = {
+    id: `rec${Date.now()}`,
+    type: 'owner_remark',
+    actor: '货主',
+    role: '货主',
+    content,
+    time: new Date().toISOString()
+  };
+  
+  const reviewInfo: ReviewInfo = {
+    ...order.reviewInfo,
+    records: [...order.reviewInfo.records, newRecord]
+  };
+  
+  updateOrderData(orderId, { reviewInfo });
+};
+
+export const refreshOrderData = (orderId: string): Order | undefined => {
+  return getOrderById(orderId);
 };
 
 export const getInTransitOrders = (): Order[] => {
@@ -347,6 +555,6 @@ export const getHistoryOrders = (): Order[] => {
   return orders.filter(o => {
     const savedData = loadFromStorage(`order_${o.id}`);
     const order = savedData ? { ...o, ...savedData } : o;
-    return order.status === 'completed' || order.status === 'arrived';
+    return order.status === 'completed' || order.status === 'arrived' || order.status === 'reviewing';
   });
 };
