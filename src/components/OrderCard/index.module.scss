@@ -1,0 +1,138 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.orderNo {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.statusBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+
+  &.normal {
+    background: $color-success-bg;
+    color: $color-success;
+  }
+
+  &.warning {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.danger {
+    background: $color-error-bg;
+    color: $color-error;
+  }
+
+  &.info {
+    background: $color-info-bg;
+    color: $color-info;
+  }
+}
+
+.cargoInfo {
+  margin-bottom: $spacing-md;
+}
+
+.cargoName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.cargoType {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding: $spacing-sm 0;
+  border-top: 1rpx solid $color-divider;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.origin,
+.destination {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
+
+.arrow {
+  margin: 0 $spacing-sm;
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tempInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.tempValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+
+  &.normal {
+    color: $color-success;
+  }
+
+  &.warning {
+    color: $color-warning;
+  }
+
+  &.danger {
+    color: $color-error;
+  }
+}
+
+.tempUnit {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.eta {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  text-align: right;
+}
+
+.etaTime {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}

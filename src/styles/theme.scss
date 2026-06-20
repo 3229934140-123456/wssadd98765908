@@ -1,0 +1,41 @@
+// ============================================
+// 主题配色变量
+// ============================================
+
+// 品牌主题色：冷蓝色系（冷链科技感）
+$color-primary: #0e8aff;
+$color-primary-light: #40a9ff;
+$color-primary-dark: #096dd9;
+$color-primary-bg: rgba(14, 138, 255, 0.08);
+
+// 功能色 - 温度语义
+$color-success: #00b42a;
+$color-success-bg: rgba(0, 180, 42, 0.08);
+$color-warning: #ff7d00;
+$color-warning-bg: rgba(255, 125, 0, 0.08);
+$color-error: #f53f3f;
+$color-error-bg: rgba(245, 63, 63, 0.08);
+$color-info: #0e8aff;
+$color-info-bg: rgba(14, 138, 255, 0.08);
+
+// 冷机状态色
+$color-cooling: #00b42a;
+$color-plug-in: #0e8aff;
+$color-oil: #ff7d00;
+
+// 背景色
+$color-bg-page: #f5f7fa;
+$color-bg-card: #ffffff;
+$color-bg-hover: #f2f3f5;
+$color-bg-gray: #f7f8fa;
+
+// 文本色
+$color-text-primary: #1d2129;
+$color-text-secondary: #4e5969;
+$color-text-tertiary: #86909c;
+$color-text-disabled: #c9cdd4;
+$color-text-white: #ffffff;
+
+// 边框色
+$color-border: #e5e6eb;
+$color-divider: #f2f3f5;
